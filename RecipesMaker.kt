@@ -2,7 +2,7 @@ fun main(args: Array<String>){
 
    var recipes:MutableList<Recipe> = mutableListOf()
 
- menu@ while (true) //labe break loop menu@
+ menu@ while (true) //label break loop menu@
      {
         println(":: Bienvenido a Recipe Maker ::\n")
     
