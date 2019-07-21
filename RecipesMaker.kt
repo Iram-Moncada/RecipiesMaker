@@ -57,11 +57,106 @@ fun selectIngredients(): List<Ingredient>{
 
     var selectedIngredients: MutableList<Ingredient> = mutableListOf()
 
-     selectedIngredients.add(Ingredient("Fresa",5.5,"tazas") ) // falta seleccionar que ingredientes y por categorias
+menu@ while(true)
+    {
+     val categorias = """
+       Ingresa ingredientes para tu receta:
+
+       Selecciona una categoría
+       1. Agua
+       2. Lácteos
+       3. Carnes, Legumbres y huevos
+       4. Verduras
+       5. Frutas
+       6. Granos
+       7. Aceites
+      
+         ...pulsa enter para salir
+     """.trimIndent()                                                             
+
+     println(categorias)
+
+    val response: String = readLine() ?: ""
+       if(response.isEmpty())
+          {break@menu}
+
+    try{
+     val category = response.toInt()
+       when(category)                                                                               
+        {   
+  	  in 1..7 ->  selectedIngredients.add( getIngredient(category) )
+	  else -> println("\nRespuesta erronea, vuelve a intentarlo\n\n")
+        }
+      } catch(e: Exception){ println("\nRespuesta erronea, vuelve a intentarlo\n\n") }
+    } //end while
 
     return selectedIngredients
 }
 
+fun getIngredient(category: Int): Ingredient
+{
+    var ingrediente: String = openList(getCategory(category))
+    
+    println("Escribe la unidad de medida")
+     val unidad: String = readLine() ?: ""
+
+ while(true)
+   {
+    println("Escribe la cantidad con número")
+     val cantidad: String = readLine() ?: ""
+
+     try{
+       val cant = cantidad.toDouble()
+        return Ingredient(ingrediente,cant,unidad) 
+     }
+     catch(e: Exception){println("Cantidad errónea")}
+   }
+
+}
+
+fun getCategory(category: Int): List<String>
+{
+   	when(category)
+    {
+      1 -> return listOf ("Agua Hirviendo","Agua Natural","Agua Hervida")  //Agua
+      2 -> return listOf ("Queso Panela","Leche","Yogurth","Queso Parmesano", "Queso Gouda")//Lacteos
+      3 -> return listOf ("Res","Pollo","Pescado","Jamón","Salchicha","Chorizo")  //Carnes 
+      4 -> return listOf ("Lechuga","Tomate","Pepino","Limón","Zanahoria","Pimiento") //Verduras  
+      5 -> return listOf ("Fresa","Plátano","Uvas","Manzana","Naranja","Pera","Cereza") // Frutas  
+      6 -> return listOf ("Avena","Trigo","Arroz","Maiz")  //Granos
+      7 -> return listOf ("Aceite de Oliva","Aceite de Cocina","Chimichurri") //Aceites
+      else -> return listOf("")
+    }
+}
+
+fun openList(list: List<String>): String
+{
+   while(true)
+   {
+    println("Elige un ingrediente") 
+
+   for ((index,item) in list.withIndex())
+   {
+     println("${index+1}. $item")  
+   }
+    val ingrediente: String = readLine() ?: ""  
+
+    try{
+       val opc = ingrediente.toInt()
+       //si esta entre 1 y el tamaño devuelve item, si no repite
+       if (opc in 1..list.size ){
+       return list.elementAt(opc-1)
+       }
+       else{
+          println("Respuesta erronea, vuelve a intentarlo\n")  
+       }
+    }
+    catch(e: Exception){
+     println("Respuesta erronea, vuelve a intentarlo\n")	    
+    }
+ }
+
+}
 
 fun readRecipes(recipes: List<Recipe>){
  
@@ -126,7 +221,7 @@ class Recipe(val name: String, val ingredients: List<Ingredient>, val instructio
 
 }
 
-class Ingredient(val name: String, val quantity: Double = 0.0, val measurement_unit: String = " " ){
+class Ingredient(val name: String, val quantity: Double = 1.0, val measurement_unit: String = " " ){
 
    override fun toString(): String {
      return "${this.quantity} ${this.measurement_unit} de ${this.name}"
