@@ -36,12 +36,18 @@ fun main(args: Array<String>){
 fun makeRecipe(): Recipe{
  
   println("\n\nIntroduce el nombre de tu receta.")
-  val name: String = readLine() ?: "Receta sin nombre"
+  var name: String = readLine() ?: "Receta sin nombre"  //valida nulo
+    if (name.isEmpty())                                 //valida vacio
+      name = "Receta sin nombre"
 
   val ingredients = selectIngredients() //devuelve una lista de ingredientes seleccionados
 
   println("Ingresa el modo de preparación: ")
-  val instructions: String = readLine() ?: "Receta sin modo de preparación"  
+
+  var instructions: String = readLine() ?: "Receta sin modo de preparación"  
+   if (instructions.isEmpty())
+     instructions = "Receta sin modo de preparación"
+
   println("\n\n")
 
   return Recipe(name, ingredients, instructions) //agrega a la receta que devuelve esta funcion el nombre y los ingredientes, sin modo de prep (editable despues)
