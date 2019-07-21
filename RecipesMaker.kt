@@ -1,8 +1,8 @@
 fun main(args: Array<String>){
 
-    var opc = 0
+   var recipes:MutableList<Recipe> = mutableListOf()
 
-    while (opc != 3)
+ menu@ while (true) //labe break loop menu@
      {
         println(":: Bienvenido a Recipe Maker ::\n")
     
@@ -16,13 +16,14 @@ fun main(args: Array<String>){
 
         println(menu)
 
-        val response:String? = readLine()
+       // val response:String? = readLine()
+       val response: String = readLine() ?: "" // Elvis operator
 
         when(response)
          {
-           "1" -> {makeRecipe(); opc = response.toInt() }
-	   "2" -> {viewRecipe();  opc = response.toInt() }
-           "3" ->  opc = response.toInt()
+           "1" -> recipes.add(makeRecipe()) // Agrega una receta a la lista recipes cada que se ejecuta makeRecipe (esta devuelve una receta)
+	   "2" -> readRecipes(recipes)
+           "3" -> break@menu
 
            else ->println("\nRespuesta erronea, vuelve a intentarlo\n\n")
          }
@@ -31,37 +32,97 @@ fun main(args: Array<String>){
        println("...Saliendo de RecipesMaker")
 }
 
-fun makeRecipe(){
-  val menu = """
-       :Hacer receta:
 
-Selecciona por categoría el ingrediente que buscas
-   1. Agua
-   2. Leche
-   3. Carne
-   4. Verduras
-   5. Frutas
-   6. Cereal
-   7. Huevos
-   8. Aceites
-""".trimIndent()
+fun makeRecipe(): Recipe{
+ 
+  println("\n\nIntroduce el nombre de tu receta.")
+  val name: String = readLine() ?: "Receta sin nombre"
 
- println(menu)
+  val ingredients = selectIngredients() //devuelve una lista de ingredientes seleccionados
 
- val response:String? = readLine()
+  println("Ingresa el modo de preparación: ")
+  val instructions: String = readLine() ?: "Receta sin modo de preparación"  
+  println("\n\n")
+
+  return Recipe(name, ingredients, instructions) //agrega a la receta que devuelve esta funcion el nombre y los ingredientes, sin modo de prep (editable despues)
+}
+
+fun selectIngredients(): List<Ingredient>{
+
+    var selectedIngredients: MutableList<Ingredient> = mutableListOf()
+
+     selectedIngredients.add(Ingredient("Fresa",5.5,"tazas") ) // falta seleccionar que ingredientes y por categorias
+
+    return selectedIngredients
+}
+
+
+fun readRecipes(recipes: List<Recipe>){
+ 
+  menu@ while (true)
+  {
+     val title = "       :Mis recetas:"
+     println(title)
+
+    if(recipes.isNotEmpty())
+    {
+      for ((index,recipe) in recipes.withIndex())
+      {
+        println("${index+1}. ${recipe.getRecipeName()}")
+      }
+
+      println("\nIngresa el numero de receta que quieres ver, o enter para salir")
+      val recipeNum: String = readLine() ?: ""    
+   
+      if(recipeNum.equals("")){
+        break@menu
+      }
+      else{
+	    try{
+             recipes.elementAt(recipeNum.toInt()-1).viewRecipe()
+
+             println("..Pulsa enter para regresar a las recetas")
+             readLine()
+            }
+	  catch(e: Exception){//out of bounds or NumberFormatException
+	    println("\nRespuesta erronea, vuelve a intentarlo\n")
+	  }
+      }
+    }//end if empty
+
+  else{
+     println("... No hay recetas para mostrar\n\n\n")
+     break@menu
+  }
+
+  }//end while
 
 }
 
-fun viewRecipe(){
-  val menu = """
-       :Ver mis recetas:
 
-   Pollo a la bbq
-   Pescado a las finas hierbas
-   Filete de res con espinacas
-""".trimIndent()
+////////////////////////////////////Clases que deberian ir en la carpeta Models si usaramos un ide como Intelij Idea////////////////
 
- println(menu)
+class Recipe(val name: String, val ingredients: List<Ingredient>, val instructions: String) {
 
- val response:String? = readLine()
+  fun viewRecipe(){
+     println("\n ::Receta: ${this.name} ::\n")
+     println("Ingredientes:")
+	 for (ingredient in this.ingredients){
+        	println("   ${ingredient.toString()}")
+	      }
+     println("\nModo de preparación:")
+     println("${this.instructions}\n")
+	}
+
+   fun getRecipeName(): String {
+     return "${this.name}"
+   }	
+
+}
+
+class Ingredient(val name: String, val quantity: Double = 0.0, val measurement_unit: String = " " ){
+
+   override fun toString(): String {
+     return "${this.quantity} ${this.measurement_unit} de ${this.name}"
+   }
 }
